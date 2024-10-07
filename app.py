@@ -7,11 +7,11 @@ st.set_page_config(page_title= "Meal Prep Planner", layout="wide", page_icon="ðŸ
 
 
 ###DATABASE INITIALIZATION####
-conn_ingredient = db.connect(r"DataBase\ingredient.db")
-conn_recipe = db.connect(r"DataBase\recipe.db")
-conn_notes = db.connect(r"DataBase\notes.db")
-conn_tags = db.connect(r"DataBase\tags.db")
-conn_macros = db.connect(r"DataBase\macros.db")
+conn_ingredient = db.connect(f"DataBase/ingredient.db")
+conn_recipe = db.connect(f"DataBase/recipe.db")
+conn_notes = db.connect(f"DataBase/notes.db")
+conn_tags = db.connect(f"DataBase/tags.db")
+conn_macros = db.connect(f"DataBase/macros.db")
 
 
 
@@ -27,7 +27,7 @@ def MealFinder(mealtype, cal):
         buffer = pd.read_sql(f"SELECT * FROM {mealtype[i]}", con=conn_tags)
         li = []
         for j in range(len(buffer)): 
-            bufferMacros = pd.read_sql(f"SELECT * FROM {buffer.loc[j,"Name"]}", con=conn_macros)
+            bufferMacros = pd.read_sql(f"SELECT * FROM {buffer.loc[j,'Name']}", con=conn_macros)
             li.append(bufferMacros.loc[0,"Calories"])
         array = np.asarray(li)
         idx = (np.abs(array - cpm)).argmin()
@@ -35,7 +35,7 @@ def MealFinder(mealtype, cal):
 
         nm-=1
 
-        buffer = pd.read_sql(f"SELECT * FROM {buffer.loc[idx,"Name"]}", con=conn_macros)
+        buffer = pd.read_sql(f"SELECT * FROM {buffer.loc[idx,'Name']}", con=conn_macros)
         cal-=buffer.loc[0,"Calories"]
         for i in buffer.columns:
             macrosTotal[k] += buffer.loc[0,i]
@@ -130,16 +130,16 @@ if submit == True:
             st.subheader("Ingredients")
 
             for i in range(len(ingredient)):
-                st.write(f"{(ingredient.loc[i,"Quantity"])*meals}  {ingredient.loc[i,"Unit"]}  {ingredient.loc[i,"Type"]}")
+                st.write(f"{(ingredient.loc[i,'Quantity'])*meals}  {ingredient.loc[i,'Unit']}  {ingredient.loc[i,'Type']}")
             
             st.subheader("Recipe")
-            for i in range(len(recipe)): st.write(f"{(recipe.loc[i,"Recipe"])}")
+            for i in range(len(recipe)): st.write(f"{(recipe.loc[i,'Recipe'])}")
 
             st.subheader("Notes")
-            for i in range(len(notes)-1): st.write(f"{(notes.loc[i,"Notes"])}")
+            for i in range(len(notes)-1): st.write(f"{(notes.loc[i,'Notes'])}")
 
             st.subheader("Macros")
-            for i in range(len(macros)):  st.write(f"Calories: {macros.loc[i,"Calories"]}  \nCarbs: {macros.loc[i,"Carbs"]}  \nProtein:{macros.loc[i,"Protein"]}  \nFats: {macros.loc[i,"Fats"]}")
+            for i in range(len(macros)):  st.write(f"Calories: {macros.loc[i,'Calories']}  \nCarbs: {macros.loc[i,'Carbs']}  \nProtein:{macros.loc[i,'Protein']}  \nFats: {macros.loc[i,'Fats']}")
 
             st.write(f"***Receipe Source***: {notes.iloc[-1].values[0]}")
         
